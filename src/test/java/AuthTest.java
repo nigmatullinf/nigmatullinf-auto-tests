@@ -1,7 +1,7 @@
 import org.junit.jupiter.api.Test;
 
+import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
 
@@ -14,12 +14,17 @@ public class AuthTest {
         //2. Кликнуть на кнопку sign in
         $("[href='/login']").click();
         //3. Заполнить инпуты логина и пароля
-        $("[id='login_field']").sendKeys("");
-        $("[id='password']").sendKeys("");
+        $("[id='login_field']").sendKeys("nigmatullinf");
+        $("[id='password']").sendKeys("UsalBasik666!");
         //4. Нажать кнопку sign in
         $(".js-sign-in-button").click();
         //5. Проверить авторизацию
         $(".Header").shouldBe(visible);
-        //$(byText("Your profile"));
+        //6. Открываем дропдаун профиля
+        $(".js-feature-preview-indicator-container").click();
+        //7. Кликаем по кнопке "Your profile"
+        $("[data-ga-click='Header, go to profile, text:your profile']").click();
+        //8. Открывается профиль пользователя
+        $(".vcard-names  span:nth-child(1)").shouldHave(text("Fayl Nigmatullin"));
     }
 }
