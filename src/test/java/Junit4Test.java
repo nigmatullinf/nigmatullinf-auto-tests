@@ -1,17 +1,29 @@
-import com.codeborne.selenide.Condition;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Flaky;
+import io.qameta.allure.Owner;
+import io.qameta.allure.Story;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.openqa.selenium.Keys;
 
-
 import java.util.stream.Stream;
+
+import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.open;
+import static io.qameta.allure.Allure.step;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import static com.codeborne.selenide.Selenide.open;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
+@Owner("nigmatullinf")
+@Feature("Тестирование репозитория Junit4")
 public class Junit4Test {
     @BeforeEach
     public void openURL() {
@@ -19,29 +31,37 @@ public class Junit4Test {
     }
 
     @Test
+    @DisplayName("Проверка выбора ветки")
     public void fixtureBranchSelectionTest() {
-        Pages.junit4Page.switchBranchesButton()
-                .click();
-        Pages.junit4Page.availableBranchesList()
-                .findBy(Condition.text("fixtures"))
-                .click();
-        Pages.junit4Page.currentBranch()
-                .shouldHave(Condition.text("fixtures"));
+        step("При выборе ветки фикстур текущая ветка меняется на fixtures", () -> {
+            Pages.junit4Page.switchBranchesButton()
+                    .click();
+            Pages.junit4Page.availableBranchesList()
+                    .findBy(text("fixtures"))
+                    .click();
+            Pages.junit4Page.currentBranch()
+                    .shouldHave(text("fixtures"));
+        });
     }
 
-    @Test
+    @DisplayName("Проверка поиска релизов")
     @MethodSource("releaseNames")
     @ParameterizedTest()
     public void releaseSearchTest(String releaseNames) {
-        Pages.junit4Page.releasesLink()
-                .click();
-        Pages.releasePage.findReleaseInput()
-                .sendKeys(releaseNames);
-        Pages.releasePage.findReleaseInput()
-                .sendKeys(Keys.ENTER);
-        Pages.releasePage.releaseCards()
-                .first()
-                .shouldHave(Condition.text(releaseNames));
+        step("Перейти на страницу с релизами", () -> {
+            Pages.junit4Page.releasesLink()
+                    .click();
+        });
+        step("Ввести название релиза в поисковую строку", () ->{
+            Pages.releasePage.findReleaseInput()
+                    .sendKeys(releaseNames);
+            Pages.releasePage.findReleaseInput()
+                    .sendKeys(Keys.ENTER);
+            Pages.releasePage.releaseCards()
+                    .first()
+                    .shouldHave(text(releaseNames));
+        });
+
     }
 
     static Stream<Arguments> releaseNames() {
